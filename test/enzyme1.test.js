@@ -2,6 +2,7 @@ import React from 'react';
 import {shallow, mount, render} from 'enzyme';
 import {expect} from 'chai';
 import App from '../app/components/App';
+import axeCore from 'axe-core';
 
 describe('Enzyme Shallow', function () {
   it('App\'s title should be Todos', function () {
@@ -39,5 +40,14 @@ describe('Enzyme Mount', function () {
     addInput.value = 'Todo Four';
     app.find('.add-button').simulate('click');
     expect(app.find('li').length).to.equal(todoLength + 1);
+  });
+
+  it('Has no accessibility errors', function () {
+    let app = mount(<App/>);
+
+    axeCore.a11yCheck(app, function(results) {
+      console.log(JSON.stringify(results));
+      expect(results.violations.length).to.equal(0);
+    });
   });
 });
