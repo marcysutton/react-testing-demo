@@ -1,4 +1,5 @@
 import React from 'react';
+import {findDOMNode} from 'react-dom';
 import {shallow, mount, render} from 'enzyme';
 import {expect} from 'chai';
 import App from '../app/components/App';
@@ -41,13 +42,23 @@ describe('Enzyme Mount', function () {
     app.find('.add-button').simulate('click');
     expect(app.find('li').length).to.equal(todoLength + 1);
   });
+});
 
-  it('Has no accessibility errors', function () {
+describe('Accessibility', function () {
+  it ('should fail on the label', function() {
     let app = mount(<App/>);
+    let node = findDOMNode(app.component);
 
-    axeCore.a11yCheck(app, function(results) {
-      console.log(JSON.stringify(results));
-      expect(results.violations.length).to.equal(0);
-    });
+    var oldNode = global.Node;
+    global.Node = node.ownerDocument.defaultView.Node;
+
+    console.log(node.innerHTML);
+
+    let config = {runOnly: {type: 'rule', values: ['label']}};
+
+    axeCore.a11yCheck(node, config, function(results) {
+      global.Node = oldNode;
+      expect(results.violations.length).to.equal(1);
+    });
   });
 });
