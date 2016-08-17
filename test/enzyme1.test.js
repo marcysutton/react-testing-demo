@@ -52,7 +52,7 @@ describe('Accessibility', function () {
 
   it('Has no errors', function () {
     a11yHelper.testEnzymeComponent(<App/>, function (results) {
-      expect(results.violations.length).to.equal(0);
-    });
+      expect(results.violations.length).to.equal(0);
+    });
   });
 });
