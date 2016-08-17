@@ -3,7 +3,8 @@ import {findDOMNode} from 'react-dom';
 import {shallow, mount, render} from 'enzyme';
 import {expect} from 'chai';
 import App from '../app/components/App';
-import axeCore from 'axe-core';
+
+import a11yHelper from "./a11yHelper";
 
 describe('Enzyme Shallow', function () {
   it('App\'s title should be Todos', function () {
@@ -45,20 +46,13 @@ describe('Enzyme Mount', function () {
 });
 
 describe('Accessibility', function () {
-  it ('should fail on the label', function() {
-    let app = mount(<App/>);
-    let node = findDOMNode(app.component);
+  this.timeout(15000);
 
-    var oldNode = global.Node;
-    global.Node = node.ownerDocument.defaultView.Node;
+  a11yHelper.init(document.body);
 
-    console.log(node.innerHTML);
-
-    let config = {runOnly: {type: 'rule', values: ['label']}};
-
-    axeCore.a11yCheck(node, config, function(results) {
-      global.Node = oldNode;
-      expect(results.violations.length).to.equal(1);
-    });
+  it('Has no errors', function () {
+    a11yHelper.testEnzymeComponent(<App/>, function (results) {
+      expect(results.violations.length).to.equal(0);
+    });
   });
 });
